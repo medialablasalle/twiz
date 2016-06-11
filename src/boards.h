@@ -13,6 +13,7 @@
 #define LED_1           13       /* ! INVERTED LOGIC ! */
 #define LED_2           14       /* ! INVERTED LOGIC ! */
 // aliases:
+#define BUTTON_PULL     NRF_GPIO_PIN_PULLDOWN
 #define LED_R           LED_0
 #define LED_G           LED_1
 #define LED_B           LED_2
@@ -53,6 +54,7 @@
 typedef enum { OLD_REV, NEW_REV } rev_t;
 char is_new_rev(void);
 void set_rev(rev_t rev);
+void buttons_init(void);
 
 #endif
 

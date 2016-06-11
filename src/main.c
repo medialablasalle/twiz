@@ -12,6 +12,7 @@
 #include "twi_calibration_store.h"
 #include "ak8975a.h"
 #include "twi_service.h"
+#include "buttons.h"
 
 /**@brief Function for application main entry.
  */
@@ -61,9 +62,14 @@ int main(void)
     }
     led_off(LED_G);
 
+    gpiote_init();
+    buttons_init();
+    scheduler_init();
+
     // Enter main loop
     for (;;)
     {
+        app_sched_execute();
         imu_update();
     }
 }
