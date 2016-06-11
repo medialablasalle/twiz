@@ -11,6 +11,7 @@
 #include "leds.h"
 #include "boards.h"
 #include "twi_service.h"
+#include "ble_lbs.h"
 
 /**@brief Function for handling the Application's BLE Stack events.
  *
@@ -73,5 +74,6 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) // TODO prune useless cases? (sec,
 void ble_evt_dispatch(ble_evt_t * p_ble_evt) {
   on_ble_evt(p_ble_evt);
   ble_imu_on_ble_evt(&imu_service, p_ble_evt);
+  ble_lbs_on_ble_evt(&m_lbs, p_ble_evt);
   ble_conn_params_on_ble_evt(p_ble_evt);
 }

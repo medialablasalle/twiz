@@ -1,9 +1,10 @@
 #include <string.h>
 #include "twi_service.h"
 #include "ble_imu.h" //IMU service
+#include "ble_lbs.h"
 
 ble_imu_t imu_service;
-
+ble_lbs_t m_lbs;
 
 /**@brief Function for initializing services that will be used by the application.
  */
@@ -24,6 +25,13 @@ void services_init(void)
     imu_init.support_notification = true;
 
     err_code = ble_imu_init(&imu_service, &imu_init);
+    APP_ERROR_CHECK(err_code);
+
+    // Initialize LBS Service
+    ble_lbs_init_t init;
+    init.led_write_handler = (void*) led_write_handler;
+
+    err_code = ble_lbs_init(&m_lbs, &init);
     APP_ERROR_CHECK(err_code);
 }
 

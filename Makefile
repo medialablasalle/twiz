@@ -22,6 +22,7 @@ C_SOURCE_FILES += twi_calibration_store.c
 C_SOURCE_FILES += twi_service.c
 C_SOURCE_FILES += ble_imu.c
 C_SOURCE_FILES += boards.c
+C_SOURCE_FILES += ble_lbs.c
 
 # nRF51822 Source
 C_SOURCE_FILES += simple_uart.c
