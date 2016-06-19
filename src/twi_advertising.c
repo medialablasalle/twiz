@@ -11,6 +11,7 @@
 #include "ble_srv_common.h"
 #include "twi_service.h"
 #include "ble_lbs.h"
+#include "ble_nus.h"
 
 void advertising_init(void) {
   ble_advdata_t advdata;
@@ -36,8 +37,8 @@ void advertising_init(void) {
   adv_manuf_data.data = adv_manuf_data_array;
   advdata.p_manuf_specific_data = &adv_manuf_data;
 
-  // Scan response for LBS
-  ble_uuid_t adv_uuids[] = {{LBS_UUID_SERVICE, m_lbs.uuid_type}};
+  // Scan response
+  ble_uuid_t adv_uuids[] = { {BLE_UUID_TWIZ_SERVICE, BLE_UUID_TYPE_BLE} };
   ble_advdata_t scanrsp;
   memset(&scanrsp, 0, sizeof(scanrsp));
   scanrsp.uuids_complete.uuid_cnt = sizeof(adv_uuids) / sizeof(adv_uuids[0]);

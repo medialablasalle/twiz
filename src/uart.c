@@ -4,64 +4,19 @@
 #include "uart.h"
 #include "boards.h"
 #include "nrf_delay.h"
-
-#ifdef UART_IRQ
-
-#include "nordic_common.h"
-#include "app_uart.h"
-
-static void uart_evt_handler(app_uart_evt_t * p_app_uart_event)
-{
-    UNUSED_PARAMETER(p_app_uart_event);
-}
-
-void uart_init()
-{
-    static uint32_t err_code;
-
-    // Init UART : 115200, no flow control
-    app_uart_comm_params_t uart_params = {
-        .rx_pin_no = UART_RX_PIN,
-        .tx_pin_no = UART_TX_PIN,
-        .flow_control = APP_UART_FLOW_CONTROL_DISABLED,
-        .use_parity = false,
-        .baud_rate = UART_BAUDRATE_BAUDRATE_Baud115200,
-    };
-    APP_UART_FIFO_INIT(&uart_params, 128, 128, uart_evt_handler, APP_IRQ_PRIORITY_HIGH, err_code);
-    APP_ERROR_CHECK(err_code);
-}
-
-int putchar(int c)
-{
-    while (app_uart_put(c) != NRF_SUCCESS);
-    return 0;
-}
-
-int getchar()
-{
-    uint8_t c;
-    while(app_uart_get(&c) != NRF_SUCCESS);
-    return c;
-}
-
-// Return true is byte has been received, false on timeout
-bool getchar_timeout(uint32_t timeout_ms, char *c)
-{
-    while (timeout_ms--) {
-        if (app_uart_get((uint8_t *)c) == NRF_SUCCESS)
-            return true;
-        nrf_delay_ms(1);
-    }
-    return false;
-}
-
-#else
-
 #include "simple_uart.h"
+
+#include "ble_nus.h"
+#include "twi_service.h"
+
 void uart_init()
 {
     simple_uart_config(UART_RTS_PIN, UART_TX_PIN, UART_CTS_PIN, UART_RX_PIN, false);
-    nrf_delay_ms(300);
+
+    NRF_UART0->INTENSET = UART_INTENSET_RXDRDY_Enabled << UART_INTENSET_RXDRDY_Pos;
+
+    NVIC_SetPriority(UART0_IRQn, APP_IRQ_PRIORITY_LOW);
+    NVIC_EnableIRQ(UART0_IRQn);
 }
 
 int putchar(int c)
@@ -79,8 +34,6 @@ bool getchar_timeout(uint32_t timeout_ms, char *c)
 {
     return simple_uart_get_with_timeout(timeout_ms, (uint8_t *)c);
 }
-
-#endif
 
 
 // Read an line from serial port until \r or until size-1 bytes are read. Returns the line,
@@ -102,3 +55,50 @@ void getline(int size, char* buf)
     }
     *buf = 0;
 }
+
+/**@brief    Function for handling the data from the Nordic UART Service.
+ *
+ * @details  This function will process the data received from the Nordic UART BLE Service and send
+ *           it to the UART module.
+ */
+void nus_data_handler(ble_nus_t * p_nus, uint8_t * p_data, uint16_t length)
+{
+
+    /**@snippet [Handling the data received over BLE] */
+
+    for (int i = 0; i < length; i++)
+    {
+        simple_uart_put(p_data[i]);
+    }
+    simple_uart_put('\n');
+}
+
+/**@brief   Function for handling UART interrupts.
+ *
+ * @details This function will receive a single character from the UART and append it to a string.
+ *          The string will be be sent over BLE when the last character received was a 'new line'
+ *          i.e '\n' (hex 0x0D) or if the string has reached a length of @ref NUS_MAX_DATA_LENGTH.
+ */
+void UART0_IRQHandler(void)
+{
+    static uint8_t data_array[BLE_NUS_MAX_DATA_LEN];
+    static uint8_t index = 0;
+    uint32_t err_code;
+
+    /**@snippet [Handling the data received over UART] */
+
+    data_array[index] = simple_uart_get();
+    index++;
+
+    if ((data_array[index - 1] == '\n') || (index >= (BLE_NUS_MAX_DATA_LEN - 1)))
+    {
+        err_code = ble_nus_send_string(&m_nus, data_array, index + 1);
+        if (err_code != NRF_ERROR_INVALID_STATE)
+        {
+            APP_ERROR_CHECK(err_code);
+        }
+
+        index = 0;
+    }
+}
+

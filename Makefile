@@ -24,13 +24,12 @@ C_SOURCE_FILES += ble_imu.c
 C_SOURCE_FILES += boards.c
 C_SOURCE_FILES += ble_lbs.c
 C_SOURCE_FILES += buttons.c
+C_SOURCE_FILES += ble_nus.c
 
 # nRF51822 Source
 C_SOURCE_FILES += simple_uart.c
 C_SOURCE_FILES += nrf_delay.c
 
-C_SOURCE_FILES += app_fifo.c
-C_SOURCE_FILES += app_uart_fifo.c
 C_SOURCE_FILES += app_gpiote.c
 C_SOURCE_FILES += app_button.c
 C_SOURCE_FILES += app_timer.c

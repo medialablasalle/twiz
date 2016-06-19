@@ -2,9 +2,12 @@
 #include "twi_service.h"
 #include "ble_imu.h" //IMU service
 #include "ble_lbs.h"
+#include "ble_nus.h"
+#include "uart.h"
 
 ble_imu_t imu_service;
 ble_lbs_t m_lbs;
+ble_nus_t m_nus;
 
 /**@brief Function for initializing services that will be used by the application.
  */
@@ -32,6 +35,15 @@ void services_init(void)
     init.led_write_handler = (void*) led_write_handler;
 
     err_code = ble_lbs_init(&m_lbs, &init);
+    APP_ERROR_CHECK(err_code);
+
+
+    // Initialize NUS Service
+    ble_nus_init_t   nus_init;
+    memset(&nus_init, 0, sizeof(nus_init));
+    nus_init.data_handler = (void*) nus_data_handler;
+
+    err_code = ble_nus_init(&m_nus, &nus_init);
     APP_ERROR_CHECK(err_code);
 }
 
