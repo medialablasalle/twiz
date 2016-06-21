@@ -30,6 +30,9 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) // TODO prune useless cases? (sec,
             m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
             err_code = app_button_enable();
             APP_ERROR_CHECK(err_code);
+            led_off(LED_0);
+            led_off(LED_1);
+            led_off(LED_2);
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
@@ -37,6 +40,9 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) // TODO prune useless cases? (sec,
             err_code = app_button_disable();
             APP_ERROR_CHECK(err_code);
             advertising_start();
+            led_off(LED_0);
+            led_off(LED_1);
+            led_off(LED_2);
             break;
 
         case BLE_GAP_EVT_SEC_PARAMS_REQUEST:

@@ -9,8 +9,8 @@
 #include "nordic_common.h"
 #include "ble_srv_common.h"
 #include "app_util.h"
-#include "nrf_gpio.h"
 #include "boards.h"
+#include "leds.h"
 
 
 /**@brief Function for handling the Connect event.
@@ -233,6 +233,6 @@ uint32_t ble_lbs_on_button_change(ble_lbs_t * p_lbs, uint8_t button_state)
 
 void led_write_handler(ble_lbs_t * p_lbs, uint8_t led_state)
 {
-    nrf_gpio_pin_write(LED_0, led_state);
-    nrf_gpio_pin_write(LED_1, led_state);
+    led_write(LED_0, led_state);
+    led_write(LED_1, led_state);
 }

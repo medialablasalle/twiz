@@ -27,6 +27,13 @@ void led_off(int c)
     }
 }
 
+void led_write(int c, uint8_t state) {
+    if (state)
+        led_on(c);
+    else
+        led_off(c);
+}
+
 void leds_init(void)
 {
     /* Detect if blue LED is available using its common anode pull up.

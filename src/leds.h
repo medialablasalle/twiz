@@ -8,5 +8,6 @@ void leds_init(void);
 void led_blink(int c, uint16_t ms);
 void led_on(int c);
 void led_off(int c);
+void led_write(int c, uint8_t state);
 
 #endif
