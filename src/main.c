@@ -13,6 +13,7 @@
 #include "ak8975a.h"
 #include "twi_service.h"
 #include "buttons.h"
+#include "nrf_soc.h"
 
 /**@brief Function for application main entry.
  */
@@ -71,6 +72,7 @@ int main(void)
     {
         app_sched_execute();
         imu_update();
+        sd_app_evt_wait(); // save power while waiting for new event
     }
 }
 
