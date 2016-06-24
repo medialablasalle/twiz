@@ -46,10 +46,10 @@ static void imu_timer_handler(void * p_context)
         }
     }
 
-    // Visual debug : toggle LED 0 with a 10% duty cycle
+    // Visual debug : toggle LED
     static unsigned cpt = 0;
     int led = connected ? LED_B : LED_G;
-    if ((++cpt % 10) == 0)
+    if ((++cpt % 25) == 0) // 25 * 40ms = 1 sec
         led_on(led);
     else
         led_off(led);
