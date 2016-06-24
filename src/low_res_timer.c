@@ -5,6 +5,7 @@
 #include "leds.h"
 #include "boards.h"
 #include "twi_service.h"
+#include "mpu9150.h"
 
 extern ble_imu_t imu_service;
 
@@ -24,9 +25,15 @@ static void imu_timer_handler(void * p_context)
 
     // update imu data to send it
     if (connected) {
-        imu_data_t imu_data;
-        ble_imu_data_update( &imu_service, get_imu_data(&imu_data) );
+        // max number of time we can skip a notification:
+        const int timeout_cnt = 6000 / IMU_UPDATE_INTERVAL_MS; // 6 sec = Con. Supervision Timeout
+        if (mpu9150_motion_detected(timeout_cnt))
+        {
+            imu_data_t imu_data;
+            ble_imu_data_update( &imu_service, get_imu_data(&imu_data) );
+        }
     } else {
+        // TODO same as above with adv:
         advertising_init();
     }
 

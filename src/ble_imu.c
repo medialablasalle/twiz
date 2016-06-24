@@ -235,11 +235,6 @@ uint32_t ble_imu_init(ble_imu_t * p_imu, const ble_imu_init_t * p_imu_init)
     return imu_data_char_add(p_imu, p_imu_init);
 }
 
-static bool are_different(ble_imu_data_t * a, ble_imu_data_t * b)
-{
-    return true; // TODO: implement with deltas
-}
-
 inline bool is_connected(ble_imu_t * p_imu)
 {
     // check if connected and notifying
@@ -249,42 +244,38 @@ inline bool is_connected(ble_imu_t * p_imu)
 uint32_t ble_imu_data_update(ble_imu_t * p_imu, ble_imu_data_t * imu_data)
 {
     uint32_t err_code = NRF_SUCCESS;
+    uint16_t len = sizeof(ble_imu_data_t);
 
-    if (are_different( imu_data, &(p_imu->imu_data_last) ))
+    // Save new IMU data
+    memcpy(&(p_imu->imu_data_last), imu_data, len);
+
+    // Update database
+    err_code = sd_ble_gatts_value_set(p_imu->imu_data_handles.value_handle,
+            0,
+            &len,
+            (uint8_t *)imu_data);
+    if (err_code != NRF_SUCCESS)
     {
-        uint16_t len = sizeof(ble_imu_data_t);
+        return err_code;
+    }
 
-        // Save new IMU data
-        memcpy(&(p_imu->imu_data_last), imu_data, len);
+    // Send value if connected (and notifying)
+    if (is_connected(p_imu))
+    {
+        ble_gatts_hvx_params_t hvx_params;
+        memset(&hvx_params, 0, sizeof(hvx_params));
 
-        // Update database
-        err_code = sd_ble_gatts_value_set(p_imu->imu_data_handles.value_handle,
-                                          0,
-                                          &len,
-                                          (uint8_t *)imu_data);
-        if (err_code != NRF_SUCCESS)
-        {
-            return err_code;
-        }
+        hvx_params.handle   = p_imu->imu_data_handles.value_handle;
+        hvx_params.type     = BLE_GATT_HVX_NOTIFICATION;
+        hvx_params.offset   = 0;
+        hvx_params.p_len    = &len;
+        hvx_params.p_data   = (uint8_t *)imu_data;
 
-        // Send value if connected (and notifying)
-        if (is_connected(p_imu))
-        {
-            ble_gatts_hvx_params_t hvx_params;
-            memset(&hvx_params, 0, sizeof(hvx_params));
-
-            hvx_params.handle   = p_imu->imu_data_handles.value_handle;
-            hvx_params.type     = BLE_GATT_HVX_NOTIFICATION;
-            hvx_params.offset   = 0;
-            hvx_params.p_len    = &len;
-            hvx_params.p_data   = (uint8_t *)imu_data;
-
-            err_code = sd_ble_gatts_hvx(p_imu->conn_handle, &hvx_params);
-        }
-        else
-        {
-            err_code = NRF_ERROR_INVALID_STATE;
-        }
+        err_code = sd_ble_gatts_hvx(p_imu->conn_handle, &hvx_params);
+    }
+    else
+    {
+        err_code = NRF_ERROR_INVALID_STATE;
     }
 
     return err_code;

@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <limits.h>
+#include <stdlib.h>
 
 #include "mpu9150.h"
 #include "i2c_wrapper.h"
@@ -152,6 +153,7 @@
 
 static uint8_t Ascale = AFS_2G;     // AFS_2G, AFS_4G, AFS_8G, AFS_16G
 static uint8_t Gscale = GFS_250DPS; // GFS_250DPS, GFS_500DPS, GFS_1000DPS, GFS_2000DPS
+static bool motion_detected = true;
 
 void mpu9150_reset() {
     // Write a one to bit 7 reset bit; toggle reset device
@@ -257,6 +259,31 @@ static void mpu9150_read_raw_data(int16_t * values)
 #endif
 }
 
+static bool motion_detection_check(float * m0, float * m1) {
+    // Ascale = AFS_2G => range = [-2g; 2g[ ; on 16 signed bits, 2**15 <=> to 2g
+    // Ascale = AFS_4G => range = [-4g; 4g[ ; on 16 signed bits, 2**15 <=> to 4g
+    const float accel_max = 1 << (15 - Ascale);      // Ascale = [0;3] <=> [2g;16g]
+    const float accel_threshold = accel_max * 1/100; // 1% tolerance
+
+    for (int i=0; i<3; i++)
+        if (abs(m0[i] - m1[i]) > accel_threshold)
+            return true;
+
+    return false;
+}
+
+bool mpu9150_motion_detected(int timeout_cnt)
+{
+    static int cnt = 0;
+    if (motion_detected || cnt == timeout_cnt) {
+        cnt = 0;
+        return true;
+    }
+
+    ++cnt;
+    return false;
+}
+
 // Read accel, temps and gyro raw values.
 void mpu9150_read_data(float * values)
 {
@@ -275,11 +302,19 @@ void mpu9150_read_data(float * values)
     for(int i=0; i<3; i++)
         data[i] = -data[i];
 
+    // use a temporary array before immobiliy check
+    float accel_new[3];
+
     // Apply correction (bias and gain for gyroscope)
     for(int i=0; i<3; i++) {
-        values[i] = 1.*data[i] - cal.accel_bias[i];
+        accel_new[i] = 1.*data[i] - cal.accel_bias[i];
         // Convert gyro in rad/s
         values[i+3] = (data[i+3] - cal.gyro_bias[i]) * 250.0 * M_PI / 180. / 32768.0;
+    }
+    motion_detected = motion_detection_check(values, accel_new);
+    // save the new values now that the comparison is done:
+    for(int i=0; i<3; i++) {
+        values[i] = accel_new[i];
     }
 }
 
