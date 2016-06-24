@@ -13,6 +13,8 @@
 #include "ble_lbs.h"
 #include "ble_nus.h"
 
+static bool is_advertising = false; // Variable to indicate if advertising is ongoing.
+
 void advertising_init(void) {
   ble_advdata_t advdata;
   uint8_t flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
@@ -49,6 +51,9 @@ void advertising_init(void) {
 
 
 void advertising_start(void) {
+  if (is_advertising)
+      return;
+
   ble_gap_adv_params_t adv_params;
 
   memset(&adv_params, 0, sizeof(adv_params));
@@ -59,4 +64,18 @@ void advertising_start(void) {
   adv_params.timeout     = APP_ADV_TIMEOUT_IN_SECONDS;
 
   ERR_CHECK(sd_ble_gap_adv_start(&adv_params));
+
+  is_advertising = true;
+}
+
+void advertising_stop(void) {
+  if (!is_advertising)
+    return;
+
+  uint32_t err_code;
+
+  err_code = sd_ble_gap_adv_stop();
+  APP_ERROR_CHECK(err_code);
+
+  is_advertising = false;
 }

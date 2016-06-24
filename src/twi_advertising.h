@@ -50,4 +50,10 @@ void advertising_init(void);
 void advertising_start(void);
 
 
+/*
+ * Function for stopping advertising.
+ */
+void advertising_stop(void);
+
+
 #endif

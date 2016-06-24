@@ -272,15 +272,14 @@ static bool motion_detection_check(float * m0, float * m1) {
     return false;
 }
 
-bool mpu9150_motion_detected(int timeout_cnt)
+bool mpu9150_motion_detected(int *cnt, int timeout_cnt)
 {
-    static int cnt = 0;
-    if (motion_detected || cnt == timeout_cnt) {
-        cnt = 0;
+    if (motion_detected || *cnt == timeout_cnt) {
+        *cnt = 0;
         return true;
     }
 
-    ++cnt;
+    *cnt = *cnt + 1;
     return false;
 }
 

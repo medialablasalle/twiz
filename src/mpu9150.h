@@ -9,6 +9,6 @@ void mpu9150_init(void);
 void mpu9150_read_data(float * values);
 void mpu9150_measure_biases(void);
 bool mpu9150_new_data();
-bool mpu9150_motion_detected(int timeout_cnt);
+bool mpu9150_motion_detected(int *cnt, int timeout_cnt);
 
 #endif
