@@ -14,6 +14,8 @@
 #include "ble_lbs.h"
 #include "app_button.h"
 
+extern bool is_advertising;
+
 /**@brief Function for handling the Application's BLE Stack events.
  *
  * @param[in]   p_ble_evt   Bluetooth stack event.
@@ -28,6 +30,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) // TODO prune useless cases? (sec,
     {
         case BLE_GAP_EVT_CONNECTED:
             m_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
+            is_advertising = false;
             err_code = app_button_enable();
             APP_ERROR_CHECK(err_code);
             led_off(LED_0);

@@ -13,7 +13,7 @@
 #include "ble_lbs.h"
 #include "ble_nus.h"
 
-static bool is_advertising = false; // Variable to indicate if advertising is ongoing.
+bool is_advertising = false; // Variable to indicate if advertising is ongoing.
 
 void advertising_init(void) {
   ble_advdata_t advdata;
