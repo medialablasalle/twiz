@@ -39,14 +39,8 @@ void advertising_init(void) {
   adv_manuf_data.data = adv_manuf_data_array;
   advdata.p_manuf_specific_data = &adv_manuf_data;
 
-  // Scan response
-  ble_uuid_t adv_uuids[] = { {BLE_UUID_TWIZ_SERVICE, BLE_UUID_TYPE_BLE} };
-  ble_advdata_t scanrsp;
-  memset(&scanrsp, 0, sizeof(scanrsp));
-  scanrsp.uuids_complete.uuid_cnt = sizeof(adv_uuids) / sizeof(adv_uuids[0]);
-  scanrsp.uuids_complete.p_uuids  = adv_uuids;
-
-  APP_ERROR_CHECK(ble_advdata_set(&advdata, &scanrsp));
+  // No scan response needed (NULL):
+  APP_ERROR_CHECK(ble_advdata_set(&advdata, NULL));
 }
 
 

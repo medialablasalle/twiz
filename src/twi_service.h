@@ -5,8 +5,6 @@
 #include "ble_lbs.h"
 #include "ble_nus.h"
 
-#define BLE_UUID_TWIZ_SERVICE 0x7312 /* HEX LEET approx for TWIZ */
-
 extern ble_imu_t imu_service;
 extern ble_lbs_t m_lbs;
 extern ble_nus_t m_nus;
