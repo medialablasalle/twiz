@@ -36,10 +36,6 @@ int main(void)
     conn_params_init();
     sec_params_init();
 
-    // Start execution
-    low_res_timer_start();
-    advertising_start();
-
     // Try load calibration data from flash
     imu_load_calibration_data();
 
@@ -62,6 +58,10 @@ int main(void)
             }
     }
     led_off(LED_G);
+
+    // Start execution
+    low_res_timer_start();
+    advertising_start();
 
     gpiote_init();
     buttons_init();
