@@ -15,7 +15,7 @@
 #define DATA_SIZE ROUND_UP((MAX(sizeof cal, PSTORAGE_MIN_BLOCK_SIZE)), 4)
 
 // Last operation status
-static uint32_t status;
+static volatile uint32_t status;
 // Flash handle
 static pstorage_handle_t flash_handle;
 
@@ -68,9 +68,8 @@ bool calibration_store_load(calibration_data_t *data)
 }
 
 // Store calibration data in flash
-void calibration_store_write(const calibration_data_t *cal_data) {
-    uint32_t count;
-
+void calibration_store_write(const calibration_data_t *cal_data)
+{
     // First, make a static copy of calibration data (which shall be persistent during flash write)
     static calibration_data_t data;
     memcpy((void*)&data, (void*)cal_data, sizeof(calibration_data_t));
@@ -79,21 +78,17 @@ void calibration_store_write(const calibration_data_t *cal_data) {
     data.magic1 = MAGIC1;
     data.magic2 = MAGIC2;
 
-    // Erase flash block
+    // Erase block
+    status = 1;
     pstorage_clear(&flash_handle, DATA_SIZE);
 
-    // Wait end of erase
-    do {
-        pstorage_access_status_get(&count);
-    } while (count != 0);
-    APP_ERROR_CHECK(status);
+    // Wait for end of erase
+    while (status != NRF_SUCCESS) ;
 
     // Write block
+    status = 1;
     pstorage_store(&flash_handle, (uint8_t *)&data, DATA_SIZE, 0);
 
     // Wait for end of write
-    do {
-        pstorage_access_status_get(&count);
-    } while (count != 0);
-    APP_ERROR_CHECK(status);
+    while (status != NRF_SUCCESS) ;
 }
