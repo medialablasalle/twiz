@@ -40,13 +40,16 @@ void leds_init(void)
        There are 2 kinds of Twiz, inverted logic LEDs or not.
        if we can detect the pullup then this is the new revision, with blue LED ;)
     */
+    nrf_gpio_cfg_output(LED_2);
+    nrf_gpio_pin_set(LED_2);
+
     nrf_gpio_cfg_input(LED_2, GPIO_PIN_CNF_PULL_Pulldown);
     if (nrf_gpio_pin_read(LED_2))
         set_rev(NEW_REV);
 
     for (int i = LED_0; i <= LED_2; i++) {
-        led_off(i);
         nrf_gpio_cfg_output(i);
+        led_off(i);
     }
 }
 
