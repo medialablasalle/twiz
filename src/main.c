@@ -21,6 +21,7 @@ int main(void)
 {
     // Initialize
     leds_init();
+    led_on(LED_G);
     ble_stack_init();
     low_res_timer_init();
     high_res_timer_init();
@@ -39,25 +40,24 @@ int main(void)
     // Try load calibration data from flash
     imu_load_calibration_data();
 
-    led_on(LED_G);
     // Wait for 1 second for a 'c' on the serial port or a button press.
     // If we get a 'c', then start calibration procedure
     printf("Press button or 'c' key to start calibration procedure\r\n");
     static char c;
-    for (int i=0; i<1000; i++) {
+
+    led_off(LED_G);
+    led_on(LED_R);
+    for (int i=0; i<300; i++) {
         bool button_was_pressed = nrf_gpio_pin_read(BUTTON);
         if (getchar_timeout(1, &c) || button_was_pressed)
             if(c == 'c' || button_was_pressed) {
-                led_off(LED_G);
-                led_on(LED_R);
                 printf("Starting calibration procedure\r\n");
                 printf("Please close minicom and start python calibration GUI\r\n");
                 imu_calibrate(button_was_pressed);
-                led_off(LED_R);
                 break;
             }
     }
-    led_off(LED_G);
+    led_off(LED_R);
 
     // Start execution
     low_res_timer_start();
