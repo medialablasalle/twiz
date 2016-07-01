@@ -1,6 +1,9 @@
 ~ Twiz ~
 ========
 
+![twiz_top](https://raw.github.com/medialablasalle/twiz/master/docs/twiz_top.png) ![twiz_bottom](https://raw.github.com/medialablasalle/twiz/master/docs/twiz_bottom.png)
+
+
 Abstract
 --------
 
@@ -11,6 +14,9 @@ sensors (3D accelerometer + 3D gyroscope + 3D magnetometer) is made on board.
 
 The fusion result is sent as Euler angles, telling how it id tilted compared
 to the gravity vector and how it is oriented compared to the north pole.
+
+This repository contains the firmware but the hardware is open source too, it
+can be found on [upverter](https://upverter.com/medialablasalle/cef9ff1aa5e13e42/twiz).
 
 
 Details
