@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Twiz : Tiny Wireless IMUz">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Twiz</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/medialablasalle/twiz">View on GitHub</a>
+
+          <h1 id="project_title">Twiz</h1>
+          <h2 id="project_tagline">Tiny Wireless IMUz</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/medialablasalle/twiz/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/medialablasalle/twiz/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p><img src="https://raw.github.com/medialablasalle/twiz/master/docs/twiz_top.png" alt="twiz_top"> <img src="https://raw.github.com/medialablasalle/twiz/master/docs/twiz_bottom.png" alt="twiz_bottom"></p>
+
+<h2>
+<a id="abstract" class="anchor" href="#abstract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Abstract</h2>
+
+<p>Twiz is a wireless motion sensor sending its data using Bluetooth Low energy.</p>
+
+<p>Its Inertial Measurement Unit has 9 degrees of freedom and the fusion of its
+sensors (3D accelerometer + 3D gyroscope + 3D magnetometer) is made on board.</p>
+
+<p>The fusion result is sent as Euler angles, telling how it id tilted compared
+to the gravity vector and how it is oriented compared to the north pole.</p>
+
+<p>This repository contains the firmware but the hardware is open source too, it
+can be found on <a href="https://upverter.com/medialablasalle/cef9ff1aa5e13e42/twiz">upverter</a>.</p>
+
+<h2>
+<a id="details" class="anchor" href="#details" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Details</h2>
+
+<p>The data sent is as follow:</p>
+
+<pre><code>* 3D accel values
+* 3D Euler angles
+</code></pre>
+
+<p>These values are advertisement in the manufacturer data packet as 12 bytes
+representing 6 signed integers, each of them being normalized on 16 bits:</p>
+
+<pre><code>* Order of the data: 0011 2233 4455  AABB CCDD EEFF
+                     x    y    z     yaw pitch roll
+                     [accel values]  [euler angles]
+
+* accel values range: [-2.0 g ; +2.0 g[
+
+* euler angles range: [-180.0 ; +180.0[
+</code></pre>
+
+<p>Note: the range of a 16 signed bit value is [-2<strong>15 ; 2</strong>15 - 1]</p>
+
+<p>Examples:</p>
+
+<p>1) If we look at the bytes #4 and #5, we get z = 0x4455.
+To get the acceleration value, the calculation is:</p>
+
+<pre><code>z_accel = 0x4455 * 4.0 / 2**16
+        = 17493  * 4.0 / 2**16
+        = 1.0677 g
+</code></pre>
+
+<p>Note: When the sensor is horizontal with the battery below, z should be -1.</p>
+
+<p>2) To get the yaw angle, corresponding to 0xAABB in our example:</p>
+
+<pre><code>yaw_angle = 0xAABB * 360.0 / 2**16
+          = -21829 * 360.0 / 2**16
+          = -119.9 degrees
+</code></pre>
+
+<p>Note: the accuracy of magnetometers is not that great yet, the fusion with the
+gyroscope improves it but decimals are not hugely relevant.</p>
+
+<h2>
+<a id="ble-services" class="anchor" href="#ble-services" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>BLE services</h2>
+
+<ul>
+<li>IMU data stream: accel + attitude (same as in advertizing)</li>
+<li>GPIO:
+
+<ul>
+<li>LED: write</li>
+<li>button: read</li>
+</ul>
+</li>
+<li>UART:
+
+<ul>
+<li>TX: write</li>
+<li>RX: read</li>
+</ul>
+</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Twiz maintained by <a href="https://github.com/medialablasalle">medialablasalle</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
