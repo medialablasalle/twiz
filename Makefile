@@ -25,6 +25,7 @@ C_SOURCE_FILES += boards.c
 C_SOURCE_FILES += ble_lbs.c
 C_SOURCE_FILES += buttons.c
 C_SOURCE_FILES += ble_nus.c
+C_SOURCE_FILES += adc.c
 
 # nRF51822 Source
 C_SOURCE_FILES += simple_uart.c

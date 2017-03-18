@@ -131,6 +131,7 @@ static inline uint16_t format_euler(float val) {
     return byte_swap((uint16_t) norm);
 }
 
+#include "adc.h" // TODO clean this
 imu_data_t * get_imu_data(imu_data_t * imu_data)
 {
     CRITICAL_REGION_ENTER();
@@ -146,6 +147,9 @@ imu_data_t * get_imu_data(imu_data_t * imu_data)
     imu_data->euler[2] = format_euler(roll);
 
     CRITICAL_REGION_EXIT();
+
+    imu_data->analog   = analogRead(0); // TODO: create new file + structure
+
     return imu_data;
 }
 
