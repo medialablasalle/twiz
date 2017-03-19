@@ -32,7 +32,10 @@ int16_t analogRead( int pin )
   while(!NRF_ADC->EVENTS_END);
   NRF_ADC->EVENTS_END = 0;
 
-  value = (int16_t)NRF_ADC->RESULT;
+  // Normalize from unsigned 10 bits to signed on 16 bits
+  // The maximum on 10 bits: 11 1111 1111
+  // ...becomes:           0111 1111 1110 0000
+  value = (int16_t)(NRF_ADC->RESULT << 5);
 
   NRF_ADC->TASKS_STOP = 1;
   NRF_ADC->ENABLE = 0;
