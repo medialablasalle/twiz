@@ -1,8 +1,8 @@
 #include "nrf.h"
 
-uint8_t analogRead( uint8_t pin )
+int16_t analogRead( int pin )
 {
-  int8_t value;
+  int16_t value;
   uint32_t adcReference = ADC_CONFIG_REFSEL_VBG;
 
   // Twiz only have AIN0, AIN1 and AIN2 easily accessible (AIN7 could also work with IMU INT pin)
@@ -14,8 +14,8 @@ uint8_t analogRead( uint8_t pin )
 
   NRF_ADC->ENABLE = 1;
 
-  uint32_t config_reg = 0; // TODO: dig 8bit or 10bit!?
-  config_reg |= ((uint32_t)ADC_CONFIG_RES_8bit << ADC_CONFIG_RES_Pos) & ADC_CONFIG_RES_Msk;
+  uint32_t config_reg = 0;
+  config_reg |= ((uint32_t)ADC_CONFIG_RES_10bit << ADC_CONFIG_RES_Pos) & ADC_CONFIG_RES_Msk;
   config_reg |= ((uint32_t)ADC_CONFIG_RES_10bit << ADC_CONFIG_INPSEL_Pos) & ADC_CONFIG_INPSEL_Msk;
   config_reg |= ((uint32_t)adcReference << ADC_CONFIG_REFSEL_Pos) & ADC_CONFIG_REFSEL_Msk;
 
@@ -32,7 +32,7 @@ uint8_t analogRead( uint8_t pin )
   while(!NRF_ADC->EVENTS_END);
   NRF_ADC->EVENTS_END = 0;
 
-  value = (int8_t)NRF_ADC->RESULT;
+  value = (int16_t)NRF_ADC->RESULT;
 
   NRF_ADC->TASKS_STOP = 1;
   NRF_ADC->ENABLE = 0;

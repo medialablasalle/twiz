@@ -5,7 +5,7 @@
 typedef struct imu_data_s {
     uint16_t accel[3]; // x, y, z
     uint16_t euler[3]; // yaw, pitch, roll // TODO: allow quaternions (euler => rotat(ion)?)
-    uint8_t analog; // TODO: create new file + structure
+    uint16_t analog; // TODO: create new file + structure
 } imu_data_t;
 
 void imu_init(void);
