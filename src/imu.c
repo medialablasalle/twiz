@@ -148,7 +148,8 @@ imu_data_t * get_imu_data(imu_data_t * imu_data)
 
     CRITICAL_REGION_EXIT();
 
-    imu_data->analog   = analogRead(0); // TODO: create new file + structure
+    // TODO: create new file + structure
+    imu_data->analog = byte_swap((uint16_t) analogRead(0));
 
     return imu_data;
 }
