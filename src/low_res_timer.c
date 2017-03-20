@@ -28,7 +28,8 @@ static void imu_timer_handler(void * p_context)
         // max number of time we can skip a notification (6sec):
         const int notif_timeout_cnt = 6000 / IMU_UPDATE_INTERVAL_MS;
         static int notif_cnt = 0;
-        if (mpu9150_motion_detected(&notif_cnt, notif_timeout_cnt))
+        // if (mpu9150_motion_detected(&notif_cnt, notif_timeout_cnt))
+        if (1) // TODO: use motion and analog value
         {
             imu_data_t imu_data;
             ble_imu_data_update( &imu_service, get_imu_data(&imu_data) );
@@ -37,7 +38,8 @@ static void imu_timer_handler(void * p_context)
         // max number of time we can skip an advertizing (10 sec):
         const int adv_timeout_cnt = 10000 / IMU_UPDATE_INTERVAL_MS;
         static int adv_cnt = 0;
-        if (mpu9150_motion_detected(&adv_cnt, adv_timeout_cnt))
+        // if (mpu9150_motion_detected(&adv_cnt, adv_timeout_cnt))
+        if (1) // TODO: use motion and analog value
         {
             advertising_init();
             advertising_start(); // TODO: check if this order works.
