@@ -37,7 +37,7 @@ int16_t analogRead( int pin )
 #ifdef USE_EXT_REF
   // Turn on "supply GPIO" - (can be used for the reference too - TODO: check sensor consumption)
   const int supplyPin = 1;
-  NRF_GPIO->OUTSET = (1UL << supplyPin);
+//  NRF_GPIO->OUTSET = (1UL << supplyPin);
 #endif
 
   NRF_ADC->TASKS_START = 1;
@@ -48,7 +48,7 @@ int16_t analogRead( int pin )
   // Normalize from unsigned 10 bits to signed on 16 bits
   // The maximum on 10 bits: 11 1111 1111
   // ...becomes:           0111 1111 1110 0000
-  value = (int16_t)(NRF_ADC->RESULT << 5);
+  value = (int16_t)NRF_ADC->RESULT;
 
 #ifdef USE_EXT_REF
   // Turn off "supply GPIO"
