@@ -38,12 +38,12 @@ representing 6 signed integers, each of them being normalized on 16 bits:
 
     * euler angles range: [-180.0 ; +180.0[
 
-Note: the range of a 16 signed bit value is [-2**15 ; 2**15 - 1]
+Note: the range of a 16 signed bit value is `[-2**15 ; 2**15 - 1]`
 
 
 Examples:
 
-1) If we look at the bytes #4 and #5, we get z = 0x4455.
+1 ) If we look at the bytes #4 and #5, we get z = 0x4455.
 To get the acceleration value, the calculation is:
 
     z_accel = 0x4455 * 4.0 / 2**16
@@ -53,7 +53,7 @@ To get the acceleration value, the calculation is:
 Note: When the sensor is horizontal with the battery below, z should be -1.
 
 
-2) To get the yaw angle, corresponding to 0xAABB in our example:
+2 ) To get the yaw angle, corresponding to 0xAABB in our example:
 
     yaw_angle = 0xAABB * 360.0 / 2**16
               = -21829 * 360.0 / 2**16
